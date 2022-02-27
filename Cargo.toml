@@ -1,0 +1,16 @@
+[package]
+name = "tlennis"
+description = "A simulation of tennis that I run with friends"
+authors = ["The & System"]
+version = "0.1.0"
+license = "MIT"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = "*"
+rand_xoshiro = "*"
+once_cell = "*"
+serde = {version = "*", features = ["derive"]}
+serde_json = "*"

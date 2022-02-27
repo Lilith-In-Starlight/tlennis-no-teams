@@ -34,6 +34,7 @@ pub struct Player {
 	pub wins: f32,
 	pub losses: f32,
 	pub mods: Vec<String>,
+	pub location: String,
 }
 
 impl Default for Player {

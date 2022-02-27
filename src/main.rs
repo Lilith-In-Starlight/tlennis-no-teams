@@ -1,7 +1,10 @@
-mod player_data;
-mod tlennis_data;
-
 use tlennis_data::TlennisData;
+
+mod tlennis_data;
+mod player_data;
+mod game_data;
+mod vectors;
+
 
 
 fn main() {

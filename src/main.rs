@@ -11,9 +11,9 @@ mod game_data;
 
 fn main() {
 	let mut data = TlennisData::new_from_file();
-	let p1 = data.player_order[1];
+	let p1 = data.player_order[0];
 	let p2 = data.player_order[5];
-
+	println!("{}", p1);
 	let mut g1 = Game::new(p1, p2);
 	loop {
 		g1.process(&mut data);

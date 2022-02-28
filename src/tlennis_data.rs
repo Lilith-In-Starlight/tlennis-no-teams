@@ -23,6 +23,7 @@ impl TlennisData {
 			p.insert(player.id, player.clone());
 			p_o.push(player.id);
 		}
+		
 		Self {
 			players: p,
 			player_order: p_o,

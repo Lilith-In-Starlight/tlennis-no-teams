@@ -5,19 +5,19 @@ use once_cell::sync::Lazy;
 use std::fs;
 
 static NAME_LIST: Lazy<Vec<&str>> = Lazy::new(||{
-	let contents: &'static str = Box::leak(fs::read_to_string("names.txt").expect("Something went wrong with names.txt").into_boxed_str());
+	let contents: &'static str = Box::leak(fs::read_to_string("gendata/names.txt").expect("Something went wrong with names.txt").into_boxed_str());
 	let result: Vec<&str> = contents.split("\r\n").collect();
 	result
 });
 
 static SURNAME_LIST: Lazy<Vec<&str>> = Lazy::new(||{
-	let contents: &'static str = Box::leak(fs::read_to_string("surnames.txt").expect("Something went wrong with surnames.txt").into_boxed_str());
+	let contents: &'static str = Box::leak(fs::read_to_string("gendata/surnames.txt").expect("Something went wrong with surnames.txt").into_boxed_str());
 	let result: Vec<&str> = contents.split("\r\n").collect();
 	result
 });
 
 static GENERAL_NAME_LIST: Lazy<Vec<&str>> = Lazy::new(||{
-	let contents: &'static str = Box::leak(fs::read_to_string("general.txt").expect("Something went wrong with general.txt").into_boxed_str());
+	let contents: &'static str = Box::leak(fs::read_to_string("gendata/general.txt").expect("Something went wrong with general.txt").into_boxed_str());
 	let result: Vec<&str> = contents.split("\r\n").collect();
 	result
 });
@@ -30,7 +30,8 @@ pub struct Player {
 	pub middlename: String,
 	pub lastname: String,
 	pub speed: f32,
-	pub strength: f32,
+	pub power: f32,
+	pub accuracy: f32,
 	pub wins: f32,
 	pub losses: f32,
 	pub mods: Vec<String>,
@@ -47,8 +48,12 @@ impl Default for Player {
 			middlename: name.1,
 			lastname: name.2,
 			speed: rng.gen_range(0.0..6.0),
-			strength: rng.gen_range(0.0..6.0),
-			..Default::default()
+			power: rng.gen_range(0.0..6.0),
+			accuracy: rng.gen_range(0.0..6.0),
+			wins: 0.0,
+			losses: 0.0,
+			mods: Vec::new(),
+			location: "Florida".to_string(),
 		}
 	}
 }
@@ -56,6 +61,13 @@ impl Default for Player {
 impl Player {
 	pub fn new() -> Player {
 		Player::default()
+	}
+	pub fn fullname(&self) -> String{
+		if self.middlename == "" {
+			format!("{} {}", self.firstname, self.lastname)
+		} else {
+			format!("{} {}. {}", self.firstname, self.middlename.get(0..1).unwrap(), self.lastname)
+		}
 	}
 }
 
@@ -96,6 +108,11 @@ fn pick_surname() -> String {
 }
 fn pick_midname() -> String {
 	let mut rng = Xoshiro256PlusPlus::from_entropy();
+
+	if rng.gen_ratio(4, 5) {
+		return "".to_string();
+	}
+
 	let mut base = pick_name(&NAME_LIST).to_string();
 	base = {
 		match rng.gen_range(0..20) {

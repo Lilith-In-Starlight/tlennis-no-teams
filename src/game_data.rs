@@ -25,6 +25,7 @@ pub struct Game {
 	pub state: GameStates,
 	pub away_score: u64,
 	pub home_score: u64,
+	pub commentary: Vec<String>,
 }
 
 const SPEED_MULT: f32 = 12.0;
@@ -71,7 +72,9 @@ impl Game {
 				self.manage_hit_result(tlennis_data, hit);
 
 				if self.away_score > 3 || self.home_score > 3 {
-					println!("Game end!");
+					let winner_id: usize = if self.home_score > self.away_score { self.home_id } else { self.away_id };
+					let winner_name = tlennis_data.players[&winner_id].fullname();
+					self.commentary.push(format!("Game end! {} wins!", winner_name));
 					self.state = GameStates::Ended;
 				}
 			},
@@ -106,9 +109,9 @@ impl Game {
 		// This must always happen if the hit is a serve
 		if p < hitting_player_speed * SPEED_MULT || serve {
 			if serve {
-				println!("{} serves!", hitting_player_name);
+				self.commentary.push(format!("{} serves!", hitting_player_name));
 			} else {
-				println!("{} hits the ball!", hitting_player_name);
+				self.commentary.push(format!("{} hits the ball!", hitting_player_name));
 			}
 			self.ball_in_home = !self.ball_in_home;
 			if rng.gen_range(0.0..6.0) < hitting_player_accuracy {
@@ -131,12 +134,12 @@ impl Game {
 			let p = rng.gen_range(0.0..p_space);
 			// Did they fail because the other player hit it too hard?
 			if p < sending_player_power {
-				println!("The ball flies into the great beyond!!!");
+				self.commentary.push(format!("The ball flies into the great beyond!!!"));
 				self.ball_in_home = !self.ball_in_home;
 				HitResults::Beyond
 			// Or was it because they simply couldn't get to it?
 			} else {
-				println!("{} fails to hit the ball!", hitting_player_name);
+				self.commentary.push(format!("{} fails to hit the ball!", hitting_player_name));
 				self.ball_in_home = !self.ball_in_home;
 				HitResults::NotHit
 			}
@@ -166,14 +169,14 @@ impl Game {
 			HitResults::NotHit => {
 				*hitter_score += 1;
 				self.state = GameStates::Serving;
-				println!("{} scores! ({}) scores!", hitting_player_name, self.tennis_score());
-				println!("");
+				self.commentary.push(format!("{} scores! ({}) scores!", hitting_player_name, self.tennis_score()));
+				self.commentary.push("".to_string());
 			},
 			HitResults::Beyond => {
 				*receiver_score += 1;
 				self.state = GameStates::Serving;
-				println!("{} scores! ({}) scores!", receiving_player_name, self.tennis_score());
-				println!("");
+				self.commentary.push(format!("{} scores! ({}) scores!", receiving_player_name, self.tennis_score()));
+				self.commentary.push("".to_string());
 			},
 		}
 	}
@@ -192,6 +195,7 @@ impl Default for Game {
 			ball_in_home: true,
 			home_score: 0,
 			away_score: 0,
+			commentary: Vec::new(),
 		}
 	}
 }

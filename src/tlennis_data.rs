@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::player_data::Player;
 
-const TLENNIS_DATA_PATH: &str = "tlennnis_data.txt";
+const TLENNIS_DATA_PATH: &str = "tlennis_data.txt";
 
 
 #[derive(Serialize, Deserialize)]
@@ -32,7 +32,7 @@ impl TlennisData {
 	}
 
 	pub fn new_from_file() -> Self {
-		if Path::new(TLENNIS_DATA_PATH).exists() {
+		if Path::new(TLENNIS_DATA_PATH).is_file() {
 			let file = fs::read_to_string(TLENNIS_DATA_PATH).unwrap();
 			let decoded: Self = serde_json::from_str(&file).unwrap();
 			decoded
@@ -43,7 +43,7 @@ impl TlennisData {
 
 	pub fn save_to_file(&self) {
         let encoded = serde_json::to_string(&self).unwrap();
-        fs::write("league_data.txt", &encoded).unwrap();
+        fs::write(TLENNIS_DATA_PATH, &encoded).unwrap();
 	}
 }
 

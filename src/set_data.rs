@@ -49,11 +49,6 @@ impl Set {
 			match self.state {
 				SetState::StartingGame => {
 					self.commentary.push(format!("Starting game {}! ({}-{})", self.current_game + 1, self.home_wins, self.away_wins));
-					if self.game.home_score > self.game.away_score {
-						self.home_wins += 1;
-					} else {
-						self.away_wins += 1;
-					}
 					self.state = SetState::OngoingGame;
 				},
 				SetState::OngoingGame => {
@@ -61,6 +56,11 @@ impl Set {
 
 					if self.game.queue_for_deletion {
 						self.current_game += 1;
+						if self.game.home_score > self.game.away_score {
+							self.home_wins += 1;
+						} else {
+							self.away_wins += 1;
+						}
 						if self.home_wins >= 6 || self.away_wins >= 6 {
 							let winner_id: usize = if self.home_wins >= 6 { self.home_id } else { self.away_id };
 							let winner_name = tlennis_data.players[&winner_id].fullname();

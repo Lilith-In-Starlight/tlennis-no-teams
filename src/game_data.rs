@@ -29,7 +29,7 @@ pub struct Game {
 	pub queue_for_deletion: bool,
 }
 
-const SPEED_MULT: f32 = 12.0;
+const SPEED_MULT: f32 = 8.0;
 const ACC_MULT: f32 = 1.8;
 
 

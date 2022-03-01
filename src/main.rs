@@ -22,7 +22,7 @@ fn main() {
 	let mut s1 = Set::new(p1, p2);
 	loop {
 		s1.process(&mut data);
-		sleep(Duration::from_millis(10));
+		sleep(Duration::from_millis(300));
 		if s1.queue_for_deletion {
 			break;
 		}

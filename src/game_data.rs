@@ -29,8 +29,7 @@ pub struct Game {
 	pub queue_for_deletion: bool,
 }
 
-const SPEED_MULT: f32 = 8.0;
-const ACC_MULT: f32 = 1.8;
+const SPEED_MULT: f32 = 1.2;
 
 
 impl Game {
@@ -105,7 +104,7 @@ impl Game {
 		let sending_player_accuracy: f32 = tlennis_data.players[&sending_player_id].accuracy;
 
 		let hp_b_dist = (hitting_player_pos as f32 - self.ball_pos as f32).abs();
-		let p_space = hitting_player_speed * SPEED_MULT + sending_player_power + hp_b_dist * 3.0;
+		let p_space = hitting_player_speed * SPEED_MULT + sending_player_power + hp_b_dist * 2.0;;
 		let p = rng.gen_range(0.0..p_space);
 
 		let hitting_player_name = tlennis_data.players[&hitting_player_id].fullname();
@@ -117,6 +116,7 @@ impl Game {
 				self.commentary.push(format!("{} serves!", hitting_player_name));
 			} else {
 				self.commentary.push(format!("{} hits the ball!", hitting_player_name));
+				if self.ball_in_home { self.home_pos = self.ball_pos} else { self.away_pos = self.ball_pos };
 			}
 			self.ball_in_home = !self.ball_in_home;
 			if rng.gen_range(0.0..6.0) < hitting_player_accuracy {
@@ -128,14 +128,14 @@ impl Game {
 					}
 				};
 			} else {
-				match rng.gen_range(0..=1) {
-					0 => self.ball_pos = (self.ball_pos + 1) % 3,
+				match rng.gen_range(0..=2) {
+					0 => self.ball_pos = u64::min(self.ball_pos + 1, 2),
 					_ => (),
 				}
 			}
 			HitResults::Hit
 		} else { // The player failed to hit the ball
-			let p_space = sending_player_power + sending_player_accuracy * ACC_MULT;
+			let p_space = sending_player_power + sending_player_accuracy;
 			let p = rng.gen_range(0.0..p_space);
 			// Did they fail because the other player hit it too hard?
 			if p < sending_player_power {
@@ -172,15 +172,16 @@ impl Game {
 		match result {
 			HitResults::Hit => self.state = GameStates::Playing,
 			HitResults::NotHit => {
-				*hitter_score += 1;
-				self.state = GameStates::Serving;
-				self.commentary.push(format!("{} scores! ({}) scores!", hitting_player_name, self.tennis_score()));
-				self.commentary.push("".to_string());
-			},
-			HitResults::Beyond => {
 				*receiver_score += 1;
 				self.state = GameStates::Serving;
 				self.commentary.push(format!("{} scores! ({}) scores!", receiving_player_name, self.tennis_score()));
+				self.commentary.push("".to_string());
+				self.ball_in_home = !self.ball_in_home;
+			},
+			HitResults::Beyond => {
+				*hitter_score += 1;
+				self.state = GameStates::Serving;
+				self.commentary.push(format!("{} scores! ({}) scores!", hitting_player_name, self.tennis_score()));
 				self.commentary.push("".to_string());
 			},
 		}

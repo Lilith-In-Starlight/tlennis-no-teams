@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::player_data::Player;
 
-const TLENNIS_DATA_PATH: &str = "tlennis_data.txt";
+const TLENNIS_DATA_PATH: &str = "tlenbnis_data.txt";
 
 
 #[derive(Serialize, Deserialize)]

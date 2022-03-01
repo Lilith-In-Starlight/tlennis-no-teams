@@ -2,7 +2,7 @@ use std::{thread::sleep, time::Duration};
 
 use rand_xoshiro::Xoshiro256PlusPlus;
 use tlennis_data::TlennisData;
-use set_data::{Set, SetState};
+use set_data::{Set};
 use rand::{SeedableRng, Rng};
 
 mod tlennis_data;

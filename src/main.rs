@@ -1,9 +1,9 @@
 use std::{thread::sleep, time::Duration};
 
-use rand::{SeedableRng, Rng};
 use rand_xoshiro::Xoshiro256PlusPlus;
 use tlennis_data::TlennisData;
-use set_data::Set;
+use set_data::{Set, SetState};
+use rand::{SeedableRng, Rng};
 
 mod tlennis_data;
 mod player_data;
@@ -23,7 +23,7 @@ fn main() {
 	loop {
 		s1.process(&mut data);
 		sleep(Duration::from_millis(10));
-		if s1.current_game >= 3 && s1.commentary.len() == 0 {
+		if s1.queue_for_deletion {
 			break;
 		}
 	}

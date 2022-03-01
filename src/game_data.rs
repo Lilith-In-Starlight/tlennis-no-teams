@@ -26,6 +26,7 @@ pub struct Game {
 	pub away_score: u64,
 	pub home_score: u64,
 	pub commentary: Vec<String>,
+	pub queue_for_deletion: bool,
 }
 
 const SPEED_MULT: f32 = 12.0;
@@ -78,7 +79,11 @@ impl Game {
 					self.state = GameStates::Ended;
 				}
 			},
-			GameStates::Ended => todo!("Ending State"),
+			GameStates::Ended => {
+				if self.commentary.len() == 0 {
+					self.queue_for_deletion = true
+				}
+			},
 		}
 	}
 
@@ -196,6 +201,7 @@ impl Default for Game {
 			home_score: 0,
 			away_score: 0,
 			commentary: Vec::new(),
+			queue_for_deletion: false,
 		}
 	}
 }

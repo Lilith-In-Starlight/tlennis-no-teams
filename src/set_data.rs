@@ -1,7 +1,7 @@
 use crate::{game_data::Game, tlennis_data::TlennisData, game_data::GameStates};
 
 pub struct Set {
-	pub games: Vec<Game>,
+	pub game: Game,
 	pub current_game: usize,
 	pub away_id: usize,
 	pub home_id: usize,
@@ -13,7 +13,7 @@ pub struct Set {
 impl Default for Set {
 	fn default() -> Self {
 		Self {
-			games: Vec::new(),
+			game: Game::default(),
 			current_game: 0,
 			away_id: 0,
 			home_id: 0,
@@ -29,7 +29,7 @@ impl Set {
 		Self {
 			home_id: home,
 			away_id: away,
-			games: Vec::from([Game::new(away, home), Game::new(away, home), Game::new(away, home)]),
+			game: Game::new(home, away),
 			..Default::default()
 		}
 	}
@@ -37,16 +37,21 @@ impl Set {
 	pub fn process(&mut self, tlennis_data: &mut TlennisData) {
 		if self.commentary.len() == 0 {
 			if self.current_game < 3 {
-				let c_game = &mut self.games[self.current_game];
-				c_game.process(tlennis_data);
-				self.commentary.append(&mut c_game.commentary);
-				match c_game.state {
+				self.game.process(tlennis_data);
+				self.commentary.append(&mut self.game.commentary);
+				match self.game.state {
 					GameStates::Ended => {
 						self.current_game += 1;
-						if self.current_game < 3 {
+						if self.home_wins < 6 && self.away_wins < 6 {
 							self.commentary.push(format!("Starting game {}!", self.current_game + 1));
+							if self.game.home_score > self.game.away_score {
+								self.home_wins += 1;
+							} else {
+								self.away_wins += 1;
+							}
+							self.game = Game::new(self.away_id, self.home_id);
 						} else {
-							let winner_id: usize = if self.home_wins > self.away_wins { self.home_id } else { self.away_id };
+							let winner_id: usize = if self.home_wins >= 6 { self.home_id } else { self.away_id };
 							let winner_name = tlennis_data.players[&winner_id].fullname();
 							self.commentary.push(format!("Set end! {} wins!", winner_name));
 						}

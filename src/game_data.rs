@@ -33,7 +33,7 @@ const ACC_MULT: f32 = 1.8;
 
 
 impl Game {
-	pub fn new(away: usize, home: usize) -> Self {
+	pub fn new(home: usize, away: usize) -> Self {
 		Self {
 			home_id: home,
 			away_id: away,
